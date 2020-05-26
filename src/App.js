@@ -19,7 +19,7 @@ const formValid = ({formErrors, ...rest}) => {
   return valid;
 };
 
-class App extends Component{
+class App extends Component {
 constructor(props) {
   super(props);
 
