@@ -1,26 +1,128 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from "react";
+import "./App.css";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+const formValid = ({formErrors, ...rest}) => {
+  let valid = true;
+
+  //validate form errors being empty
+
+  Object.values(formErrors).forEach(val => {
+    val.length > 0 && (valid = false);
+
+  });
+
+  //validate the form was filled out
+  Object.value(rest).forEach(val => {
+   val === null && (valid = false) ;
+  });
+
+  return valid;
+};
+
+class App extends Component {
+constructor(props){
+  super(props);
+
+  this.state = {
+    LoginName:null,
+    passWord:null,
+      
+    formErrors:{
+      LoginName:"",
+      passWord:"",
+    }
+  };
+}
+ 
+handleSubmit = e => {
+  e.preventDefault();
+
+  if(formValid(this.state)){
+    console.log(`
+    --SUBMITTING--
+    LoginName:${this.state.LoginName}
+    passWord:${this.state.passWord}
+    `)
+  }else{
+    console.error('FORM INVALID - DISPLAY ERROR MESSSAGE');
+  }
+};
+
+handleChange = e =>{
+  e.preventDefault();
+  const { name, value } = e.target;
+  let formErrors = this.state.formErrors;
+
+  console.log("Name: ",name);
+  console.log("value: ", value);
+
+switch(name){
+  case "LoginName":
+    formErrors.LoginName=
+    value.length < 3 
+    ? "minimum 3 characters required"
+    : "";
+    break;
+
+    case "passWord":
+    formErrors.passWord=
+    value.length < 6 
+    ? "minimum 6 characters required"
+    : "";
+    break;
+
+    default:
+      break;
 }
 
+this.setState({ formErrors, [name]: value}, () => console.log(this.state))
+
+};
+
+  render() {
+const { formErrors } = this.state;
+
+    return (
+      <div className="wrapper">
+        <div className="form-wrapper">
+          <h1>Create Account</h1>
+          <form onSubmit={this.handleSubmit} noValidate>
+            <div className="LoginName">
+              <label htmlFor="LoginName">Login Name</label>
+              <input
+                className={formErrors.LoginName.length > 0 ? "error" : null}
+                placeholder="Login Name"
+                type="text"
+                name="LoginName"
+                noValidate
+                onChange={this.handleChange}
+              />
+              {formErrors.LoginName.length > 0 && (
+                <span className="errorMessage">{formErrors.LoginName}</span>
+              )}
+            </div>
+            <div className="passWord">
+              <label htmlFor="passWord">PassWord</label>
+              <input
+                className={formErrors.passWord.length > 0 ? "error" : null}
+                placeholder="PassWord"
+                type="text"
+                name="passWord"
+                noValidate
+                onChange={this.handleChange}
+              />
+               {formErrors.passWord.length > 0 && (
+                <span className="errorMessage">{formErrors.passWord}</span>
+              )}
+            </div>
+            <div className="createAccount">
+              <button type="submit">Create Account</button>
+              <small>Already Have an Account?</small>
+            </div>
+          </form>
+        </div>
+      </div>
+    );
+  }
+}
 export default App;
